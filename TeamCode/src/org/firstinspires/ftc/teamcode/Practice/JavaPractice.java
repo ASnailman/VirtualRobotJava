@@ -31,6 +31,7 @@ public class JavaPractice extends LinearOpMode {
     static MoveDirection DiagDirection;
     BNO055IMU IMU;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    BNO055IMU ACCIMU;
     Orientation orientation;
     double globalangle;
     double current_value;
