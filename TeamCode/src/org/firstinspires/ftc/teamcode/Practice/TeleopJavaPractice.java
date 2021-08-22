@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
@@ -22,6 +23,7 @@ public class TeleopJavaPractice extends LinearOpMode {
     static DcMotor BackRight;
     static DcMotor FrontLeft;
     static DcMotor FrontRight;
+    static Servo BackServo;
     static ColorSensor Colorsensor;
     static MoveDirection Direction;
     static MoveDirection DiagDirection;
@@ -45,7 +47,8 @@ public class TeleopJavaPractice extends LinearOpMode {
         );
 
         SensorInitialize(
-                hardwareMap.colorSensor.get("color_sensor")
+                hardwareMap.colorSensor.get("color_sensor"),
+                hardwareMap.servo.get("back_servo")
         );
 
         FrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -78,6 +81,9 @@ public class TeleopJavaPractice extends LinearOpMode {
                 double FLpower;
                 double BRpower;
                 double BLpower;
+
+                if (gamepad1.x) BackServo.setPosition(1);
+                else if (gamepad1.b) BackServo.setPosition(0);
 
                 double drive = -gamepad1.left_stick_y;
                 double strafe = gamepad1.left_stick_x;
@@ -116,9 +122,10 @@ public class TeleopJavaPractice extends LinearOpMode {
 
     }
 
-    private void SensorInitialize(ColorSensor color_sensor) {
+    private void SensorInitialize(ColorSensor color_sensor, Servo back_servo) {
 
         Colorsensor = color_sensor;
+        BackServo = back_servo;
 
     }
 

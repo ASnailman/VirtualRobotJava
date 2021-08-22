@@ -46,7 +46,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 public interface BNO055IMU extends HardwareDevice {
 
-
     boolean initialize(Parameters parameters);
 
     Parameters getParameters();
