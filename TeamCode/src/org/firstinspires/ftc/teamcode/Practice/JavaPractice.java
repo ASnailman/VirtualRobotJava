@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -29,6 +30,7 @@ public class JavaPractice extends LinearOpMode {
     static ColorSensor Colorsensor;
     static MoveDirection Direction;
     static MoveDirection DiagDirection;
+    static Servo BackServo;
     BNO055IMU IMU;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     BNO055IMU ACCIMU;
@@ -53,15 +55,17 @@ public class JavaPractice extends LinearOpMode {
         );
 
         SensorInitialize(
-                hardwareMap.colorSensor.get("color_sensor")
+                hardwareMap.colorSensor.get("color_sensor"),
+                hardwareMap.servo.get("back_servo")
         );
 
         SetDirection(MoveDirection.FORWARD);
-
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        IMU = hardwareMap.get(BNO055IMU.class, "imu");
+        BackServo.setDirection(Servo.Direction.FORWARD);
         DistancesensorForward = hardwareMap.get(DistanceSensor.class, "front_distance");
         DistancesensorRight = hardwareMap.get(DistanceSensor.class, "right_distance");
+        IMU = hardwareMap.get(BNO055IMU.class, "imu");
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
         IMU.initialize(parameters);
 
         orientation = IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -73,24 +77,30 @@ public class JavaPractice extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            AutoGridpoint(5,5);
+            ServoPosition(1);
+            DirectionFollower2(-2900, 0.7, 0,0.000000003,0.000000000000001,0.000000000005);
+            DiagonalMovement(MoveDirection.SIDEWAYSRIGHT, 0.7, 0.73, 2650);
+            GyroTurn(0, 0.2);
+            ServoPosition(0);
+            return;
 
-            //DirectionFollower2(20000, 0.6, 45, 0.0000000000000003, 0.00000000000000001, 0.00000000000005);
-            //GyroTurn(0, 0.6);
-            //DirectionFollower2(20000, 0.6, 1, 0.000000003, 0.000000000000001, 0.000000000005);
-            //DirectionFollower2(20000, 0.5, 3, 0.0000003, 0.00000000000000001, 0.00000000001);
-            //DirectionFollower2(20000, 0.5, 0, 0,0,0);
-            //DiagonalMovement(MoveDirection.TOPDIAGLEFT, 0.8, 0.8, 2000);
-            //DiagonalMovement(MoveDirection.TOPDIAGRIGHT, 1, 1, 5000);
-            //DiagonalMovement(MoveDirection.SIDEWAYSRIGHT, 0.8, 0.8, 2000);
-            //DiagonalMovement(MoveDirection.BOTTOMDIAGRIGHT, 0.8, 0.8, 1000);
-            //DiagonalMovement(MoveDirection.BOTTOMDIAGLEFT, 0.8, 0.8, 2000);
-            //DiagonalMovement(MoveDirection.SIDEWAYSLEFT, 0.8, 0.8, 4000);
-            //WhiteDetector();
-            //RedDetector();
-            //return;
         }
     }
+
+    //DirectionFollower2(20000, 0.6, 45, 0.0000000000000003, 0.00000000000000001, 0.00000000000005);
+    //GyroTurn(0, 0.6);
+    //DirectionFollower2(20000, 0.6, 1, 0.000000003, 0.000000000000001, 0.000000000005);
+    //DirectionFollower2(20000, 0.5, 3, 0.0000003, 0.00000000000000001, 0.00000000001);
+    //DirectionFollower2(20000, 0.5, 0, 0,0,0);
+    //DiagonalMovement(MoveDirection.TOPDIAGLEFT, 0.8, 0.8, 2000);
+    //DiagonalMovement(MoveDirection.TOPDIAGRIGHT, 1, 1, 5000);
+    //DiagonalMovement(MoveDirection.SIDEWAYSRIGHT, 0.8, 0.8, 2000);
+    //DiagonalMovement(MoveDirection.BOTTOMDIAGRIGHT, 0.8, 0.8, 1000);
+    //DiagonalMovement(MoveDirection.BOTTOMDIAGLEFT, 0.8, 0.8, 2000);
+    //DiagonalMovement(MoveDirection.SIDEWAYSLEFT, 0.8, 0.8, 4000);
+    //WhiteDetector();
+    //RedDetector();
+    //return;
 
     private void MotorInitialize (DcMotor back_left_motor,
                                   DcMotor back_right_motor,
@@ -104,9 +114,10 @@ public class JavaPractice extends LinearOpMode {
 
     }
 
-    private void SensorInitialize (ColorSensor color_sensor) {
+    private void SensorInitialize (ColorSensor color_sensor, Servo back_servo) {
 
         Colorsensor = color_sensor;
+        BackServo = back_servo;
 
     }
 
@@ -198,6 +209,14 @@ public class JavaPractice extends LinearOpMode {
             return Unknown;
 
         }
+    }
+
+    private void ServoPosition (double position) {
+
+        BackServo.scaleRange(0, 1);
+        BackServo.setPosition(position);
+        telemetry.addData("Position", BackServo.getPosition());
+
     }
 
     private void SetDirection (MoveDirection direction) {
